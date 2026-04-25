@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>CuaX Trader — Pixel Big V12</title>
+<style>
+:root{
+  --bg:#08090f; --bg2:#0d1020; --panel:#111522; --panel2:#171d2d;
+  --border:#3b4260; --border2:#596289; --text:#f4f7ff; --muted:#9aa6c5;
+  --green:#00ff88; --red:#ff3868; --orange:#ff9b22; --yellow:#ffe04d;
+  --cyan:#25e6ff; --blue:#558bff; --purple:#bd6cff;
+  --font-pixel:ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace;
+  --font-vt:ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;background:var(--bg);color:var(--text);overflow-x:hidden;font-family:var(--font-vt);font-size:16px}
+body{background:radial-gradient(circle at 8% 0%,rgba(255,155,34,.18),transparent 25%),radial-gradient(circle at 85% 0%,rgba(37,230,255,.12),transparent 28%),linear-gradient(180deg,#08090f,#0c1020 45%,#08090f)}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:999;opacity:.25;background:repeating-linear-gradient(0deg,transparent,transparent 4px,rgba(0,0,0,.12) 4px,rgba(0,0,0,.12) 5px)}
+.app{display:flex;flex-direction:column;min-height:100dvh}.green{color:var(--green)!important}.red{color:var(--red)!important}.orange{color:var(--orange)!important}.cyan{color:var(--cyan)!important}.yellow{color:var(--yellow)!important}.purple{color:var(--purple)!important}.muted{color:var(--muted)!important}
+.topbar{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;padding:12px 16px;background:rgba(13,16,32,.96);border-bottom:3px solid var(--border2);position:sticky;top:0;z-index:50;box-shadow:0 10px 28px rgba(0,0,0,.45)}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:58px;height:58px;background:linear-gradient(135deg,var(--orange),#ffe07a);border:3px solid #fff;display:grid;place-items:center;font-family:var(--font-pixel);font-size:16px;color:#10121b;font-weight:1000;box-shadow:5px 5px 0 #000;position:relative}.logo span{position:relative;z-index:1}.logo::before{content:"";position:absolute;inset:3px;background:repeating-linear-gradient(45deg,transparent,transparent 5px,rgba(0,0,0,.12) 5px,rgba(0,0,0,.12) 10px)}
+.brand-name{font-family:var(--font-pixel);font-size:28px;line-height:1;color:var(--orange);font-weight:1000;text-shadow:3px 3px 0 #000}.brand-sub{margin-top:5px;font-family:var(--font-pixel);font-size:12px;color:var(--muted);font-weight:800}.status-chips{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end}.chip{display:flex;align-items:center;gap:7px;padding:8px 11px;border:2px solid var(--border);background:var(--panel2);font-family:var(--font-pixel);font-size:12px;color:var(--muted);box-shadow:3px 3px 0 #000;min-height:34px}.chip b{color:var(--text);font-size:12px}.chip.g{border-color:var(--green);color:var(--green)}.chip.o{border-color:var(--orange);color:var(--orange)}.chip.c{border-color:var(--cyan);color:var(--cyan)}.dot{width:9px;height:9px;background:var(--green);box-shadow:0 0 0 2px #000;animation:blink .9s steps(1) infinite}@keyframes blink{50%{opacity:.25}}
+.controls{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;padding:12px 16px;background:rgba(8,9,15,.92);border-bottom:2px solid var(--border)}.field{display:flex;flex-direction:column;gap:6px}.field label{font-family:var(--font-pixel);font-size:12px;color:var(--muted);text-transform:uppercase;font-weight:900}input,select{height:44px;padding:0 12px;background:#080b14;color:var(--text);border:2px solid var(--border2);font-family:var(--font-vt);font-size:20px;outline:none;box-shadow:inset 3px 3px 0 #000;min-width:90px}input:focus,select:focus{border-color:var(--cyan)}.strategy-w{width:min(430px,58vw)}.small-w{width:110px}.btn{height:44px;padding:0 16px;font-family:var(--font-pixel);font-size:12px;font-weight:1000;cursor:pointer;border:2px solid;transition:transform .08s;box-shadow:4px 4px 0 #000;white-space:nowrap}.btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 #000}.btn.start{background:var(--green);color:#06100c;border-color:#00cc66}.btn.pause{background:var(--yellow);color:#10100a;border-color:#ccaa00}.btn.resume{background:var(--cyan);color:#061015;border-color:#00aacc}.btn.stop{background:var(--red);color:#fff;border-color:#cc0033}
+.workspace{flex:1;display:grid;grid-template-columns:330px minmax(560px,1fr) 360px;gap:12px;padding:12px;align-items:start}.pane{display:grid;gap:12px;align-content:start}.panel{background:linear-gradient(180deg,rgba(23,29,45,.96),rgba(13,17,28,.96));border:2px solid var(--border2);box-shadow:5px 5px 0 #000;padding:14px;position:relative;overflow:hidden}.panel::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:repeating-linear-gradient(90deg,var(--orange) 0 8px,transparent 8px 16px);opacity:.65}.ph{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;padding-bottom:9px;border-bottom:2px solid var(--border)}.ph h2,.ph h3{font-family:var(--font-pixel);font-size:14px;color:var(--cyan);text-transform:uppercase;letter-spacing:.04em;font-weight:1000}.ph .sub{font-family:var(--font-pixel);font-size:11px;color:var(--muted)}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:var(--panel2);border:2px solid var(--border);padding:13px 12px;box-shadow:3px 3px 0 #000;position:relative;overflow:hidden}.stat::after{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--border2)}.stat span{display:block;font-family:var(--font-pixel);font-size:11px;color:var(--muted);font-weight:900}.stat b{display:block;margin-top:8px;font-family:var(--font-vt);font-size:32px;line-height:1;font-weight:1000}.stat small{font-family:var(--font-pixel);font-size:10px;color:var(--muted);margin-top:4px;display:block}.signal-panel{min-height:210px}.sig-label{font-family:var(--font-pixel);font-size:12px;color:var(--muted);text-transform:uppercase;font-weight:900}.sig-big{font-family:var(--font-pixel);font-size:44px;margin:14px 0 0;color:var(--orange);text-shadow:5px 5px 0 #000;line-height:.95;font-weight:1000;animation:pulse-text 2s ease-in-out infinite}@keyframes pulse-text{50%{text-shadow:5px 5px 0 #000,0 0 22px rgba(255,155,34,.38)}}.sig-action{font-family:var(--font-pixel);font-size:20px;color:var(--cyan);margin-top:10px;font-weight:1000}.pixel-divider{height:3px;margin:14px 0;background:repeating-linear-gradient(90deg,var(--orange) 0 8px,var(--cyan) 8px 16px,transparent 16px 24px);opacity:.75}.mini-card{background:var(--panel2);border:2px solid var(--border);padding:12px;box-shadow:3px 3px 0 #000}.mini-card span{font-family:var(--font-pixel);font-size:11px;color:var(--muted);display:block;font-weight:900}.mini-card b{font-family:var(--font-vt);font-size:28px;display:block;margin-top:7px;font-weight:1000}.config-rows{display:grid}.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);font-size:16px}.row:last-child{border-bottom:0}.row span{font-family:var(--font-pixel);font-size:12px;color:var(--muted);font-weight:900}.row b{font-family:var(--font-vt);font-size:22px;text-align:right}
+.chart-wrap{height:220px;background:var(--panel2);border:2px solid var(--border);box-shadow:inset 3px 3px 0 #000;position:relative;overflow:hidden}.chart-wrap::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:42px 42px;opacity:.35}.chart-wrap svg{position:absolute;inset:0;width:100%;height:100%}.radar-wrap{height:240px;display:grid;place-items:center;background:var(--panel2);border:2px solid var(--border);position:relative;overflow:hidden;box-shadow:inset 3px 3px 0 #000}.radar-grid{width:180px;height:180px;border-radius:50%;border:3px solid var(--cyan);position:relative;display:grid;place-items:center;box-shadow:0 0 0 2px var(--bg),0 0 28px rgba(37,230,255,.18),inset 0 0 24px rgba(37,230,255,.06)}.radar-grid::before,.radar-grid::after{content:"";position:absolute;border:1px solid rgba(37,230,255,.28);border-radius:50%}.radar-grid::before{width:50%;height:50%}.radar-grid::after{width:78%;height:78%}.radar-sweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgba(37,230,255,0),rgba(37,230,255,.38) 58deg,transparent 58deg);animation:sweep 1.6s linear infinite}@keyframes sweep{to{transform:rotate(360deg)}}.radar-center{width:12px;height:12px;background:var(--orange);box-shadow:0 0 0 3px #000;z-index:2}.radar-dot{position:absolute;width:10px;height:10px;background:var(--green);box-shadow:0 0 0 3px #000;animation:blink 1.2s steps(1) infinite}.radar-dot.b{background:var(--yellow);animation-delay:.4s}.radar-dot.c{background:var(--red);animation-delay:.8s}.radar-info{position:absolute;bottom:10px;left:12px;right:12px;display:flex;justify-content:space-between;gap:12px}.radar-info span{font-family:var(--font-pixel);font-size:12px;color:var(--cyan);font-weight:900}.scan-line{height:3px;margin-top:10px;animation:scan-anim .8s linear infinite}@keyframes scan-anim{from{background-position:0}to{background-position:120px}}
+.pipeline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.stage{padding:14px 10px;min-height:120px;border:2px solid var(--border);background:var(--panel2);box-shadow:3px 3px 0 #000;text-align:center;transition:border-color .15s,background .15s;position:relative}.stage.pass{border-color:var(--green);background:rgba(0,255,136,.08)}.stage.watch{border-color:var(--cyan);background:rgba(37,230,255,.08)}.stage.warn{border-color:var(--yellow);background:rgba(255,224,77,.08)}.stage.fail{border-color:var(--red);background:rgba(255,56,104,.08)}.stage-num{font-family:var(--font-pixel);font-size:12px;color:var(--muted);font-weight:900}.stage-icon{font-size:24px;margin:8px 0;display:block}.stage-name{font-family:var(--font-pixel);font-size:14px;color:var(--text);margin-top:4px;font-weight:1000}.stage-status{font-family:var(--font-pixel);font-size:11px;margin-top:7px}.stage.pass .stage-status{color:var(--green)}.stage.watch .stage-status{color:var(--cyan)}.stage.warn .stage-status{color:var(--yellow)}.stage.fail .stage-status{color:var(--red)}.stage .stage-status{color:var(--muted)}.stage-detail{font-family:var(--font-vt);font-size:16px;color:var(--muted);margin-top:7px;line-height:1.25;overflow-wrap:break-word;word-break:break-word}.price-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.px-card{background:var(--panel2);border:2px solid var(--border);padding:14px 10px;text-align:center;box-shadow:3px 3px 0 #000;position:relative}.px-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--orange);opacity:.75}.px-card span{font-family:var(--font-pixel);font-size:11px;color:var(--muted);display:block;font-weight:900}.px-card b{font-family:var(--font-vt);font-size:42px;display:block;margin-top:8px;color:var(--text);font-weight:1000}.lock-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.depth-row{display:flex;align-items:center;gap:10px;margin-top:10px}.depth-label{font-family:var(--font-pixel);font-size:12px;width:54px;flex-shrink:0;font-weight:900}.depth-track{flex:1;height:12px;background:var(--border);border:1px solid var(--border2);overflow:hidden}.depth-fill{height:100%;background:var(--orange);transition:width .35s steps(8)}.depth-val{font-family:var(--font-vt);font-size:18px;width:90px;text-align:right;flex-shrink:0}
+.feed,.logs{display:grid;gap:8px;max-height:300px;overflow:auto;scrollbar-width:thin;scrollbar-color:var(--border2) transparent}.feed-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:10px;border:2px solid var(--border);background:var(--panel2);box-shadow:3px 3px 0 #000;animation:slide-in .18s steps(4) both}@keyframes slide-in{from{transform:translateX(8px);opacity:0}to{transform:none;opacity:1}}.badge{display:inline-flex;align-items:center;padding:4px 8px;font-family:var(--font-pixel);font-size:11px;border:2px solid;box-shadow:2px 2px 0 #000;white-space:nowrap;font-weight:900}.badge.buy{background:rgba(0,255,136,.12);color:var(--green);border-color:var(--green)}.badge.sell{background:rgba(255,56,104,.12);color:var(--red);border-color:var(--red)}.badge.arb,.badge.hedge{background:rgba(255,155,34,.12);color:var(--orange);border-color:var(--orange)}.badge.resolved{background:rgba(37,230,255,.12);color:var(--cyan);border-color:var(--cyan)}.badge.info,.badge.signal{background:rgba(189,108,255,.12);color:var(--purple);border-color:var(--purple)}.feed-msg{font-family:var(--font-vt);font-size:18px;flex:1;overflow-wrap:break-word;word-break:break-word}.feed-time,.log-time{font-family:var(--font-pixel);font-size:10px;color:var(--muted);white-space:nowrap;flex-shrink:0}.log-row{padding:9px;border-left:3px solid var(--border2);font-family:var(--font-vt);font-size:16px;color:var(--muted);display:flex;justify-content:space-between;gap:10px;background:rgba(255,255,255,.025)}.pnl-bar{margin-top:10px}.pnl-track{height:12px;background:var(--border);border:1px solid var(--border2);overflow:hidden}.pnl-fill{height:100%;background:repeating-linear-gradient(90deg,var(--green) 0 8px,rgba(0,255,136,.6) 8px 16px);transition:width .5s steps(10)}.pnl-fill.neg{background:repeating-linear-gradient(90deg,var(--red) 0 8px,rgba(255,56,104,.6) 8px 16px)}
+.toast{position:fixed;bottom:14px;left:14px;right:14px;z-index:100;display:none;padding:13px 16px;background:var(--panel);border:2px solid var(--orange);box-shadow:5px 5px 0 #000;font-family:var(--font-pixel);font-size:13px;color:var(--orange)}.process-stack{position:fixed;right:14px;top:120px;z-index:60;display:grid;gap:8px;width:min(360px,calc(100vw - 28px));pointer-events:none}.process-toast{padding:12px 14px;background:var(--panel);border:2px solid var(--border2);box-shadow:4px 4px 0 #000;border-left:6px solid var(--orange);animation:pop-in .15s steps(3) both}.process-toast.pass{border-left-color:var(--green)}.process-toast.watch{border-left-color:var(--cyan)}.process-toast.warn{border-left-color:var(--yellow)}.process-toast.fail{border-left-color:var(--red)}@keyframes pop-in{from{transform:translateX(20px);opacity:0}}.process-toast h4{font-family:var(--font-pixel);font-size:13px;color:var(--text)}.process-toast p{font-family:var(--font-vt);font-size:16px;color:var(--muted);margin-top:6px;line-height:1.35}.mobile-tabs{display:none;position:fixed;left:8px;right:8px;bottom:8px;z-index:50;gap:7px}.mobile-tabs button{flex:1;height:50px;background:var(--panel);border:2px solid var(--border2);color:var(--muted);font-family:var(--font-pixel);font-size:12px;cursor:pointer;box-shadow:4px 4px 0 #000;font-weight:1000}.mobile-tabs button.active{border-color:var(--orange);color:var(--orange)}
+@media(max-width:1350px){.workspace{grid-template-columns:310px minmax(520px,1fr)}.right-pane,#rightPane{display:none}.price-grid{grid-template-columns:repeat(2,1fr)}.lock-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:980px){.topbar{grid-template-columns:1fr}.status-chips{justify-content:flex-start}.workspace{display:block;padding-bottom:72px}.pane{display:none}.pane.active{display:grid}.mobile-tabs{display:flex}.process-stack{top:auto;bottom:72px}.controls{display:grid;grid-template-columns:1fr 1fr}.controls .field:first-child{grid-column:1/-1}.strategy-w{width:100%}.small-w{width:100%}.btn{width:100%}.pipeline{grid-template-columns:repeat(2,1fr)}.price-grid,.lock-grid{grid-template-columns:repeat(2,1fr)}.chart-wrap{height:220px}.radar-wrap{height:230px}.brand-name{font-size:26px}.brand-sub{font-size:12px}}
+@media(max-width:560px){html,body{font-size:15px}.topbar{padding:10px}.controls{padding:10px}.workspace{padding:10px 10px 74px}.logo{width:52px;height:52px}.brand-name{font-size:22px}.chip{font-size:11px;padding:7px 9px}.chip b{font-size:11px}.stat-grid{grid-template-columns:1fr 1fr;gap:8px}.stat{padding:11px 9px}.stat b{font-size:28px}.sig-big{font-size:38px}.sig-action{font-size:18px}.pipeline{grid-template-columns:1fr}.price-grid,.lock-grid{grid-template-columns:1fr 1fr}.px-card b{font-size:36px}.mini-card b{font-size:24px}.feed-msg{font-size:17px}.ph h2,.ph h3{font-size:13px}.panel{padding:12px}.radar-grid{width:160px;height:160px}}
+@media(max-width:390px){.price-grid,.lock-grid,.stat-grid{grid-template-columns:1fr}.controls{grid-template-columns:1fr}.sig-big{font-size:34px}.brand-name{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo"><span>CX</span></div>
+      <div>
+        <div class="brand-name">CuaX Trader</div>
+        <div class="brand-sub">PIXEL PRO v10</div>
+      </div>
+    </div>
+    <div class="status-chips">
+      <div class="chip o"><span class="dot"></span>Mode <b id="mode">SIM</b></div>
+      <div class="chip c">Asset <b id="asset">BTC•5m</b></div>
+      <div class="chip">Strat <b id="strat-pill">gap-six-layer-arb</b></div>
+      <div class="chip g">Bot <b id="bot-status">IDLE</b></div>
+      <div class="chip">Up <b id="uptime">00:00:00</b></div>
+    </div>
+  </header>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div class="field" style="flex:1;min-width:160px">
+      <label>Strategy</label>
+      <input id="strategyInput" class="strategy-w" value="gap-six-layer-arb"/>
+    </div>
+    <div class="field">
+      <label>Rounds</label>
+      <input id="roundsInput" class="small-w" value="unlimited"/>
+    </div>
+    <div class="field">
+      <label>Slot</label>
+      <input id="slotInput" class="small-w" value="0"/>
+    </div>
+    <div class="field">
+      <label>Mode</label>
+      <select id="prodInput"><option value="false">SIM</option><option value="true">PROD</option></select>
+    </div>
+    <button class="btn start" onclick="startBot()">▶ START</button>
+    <button class="btn pause" onclick="pauseBot()">⏸ PAUSE</button>
+    <button class="btn resume" onclick="resumeBot()">▶▶ RESUME</button>
+    <button class="btn stop" onclick="stopBot()">■ STOP</button>
+  </div>
+
+  <!-- WORKSPACE -->
+  <main class="workspace" id="workspace">
+
+    <!-- LEFT PANE -->
+    <aside class="pane active" id="leftPane">
+
+      <!-- Signal -->
+      <section class="panel signal-panel">
+        <div class="ph"><h3>GAP SIGNAL</h3><span class="sub">Logic ngược hướng</span></div>
+        <div class="sig-label">Signal hiện tại</div>
+        <div class="sig-big" id="sig-big">--</div>
+        <div class="sig-action" id="sig-action">→ SCAN</div>
+        <div class="pixel-divider"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:4px">
+          <div class="mini-card"><span>FIRST LEG</span><b id="firstLeg">--</b></div>
+          <div class="mini-card"><span>HEDGE SIDE</span><b id="hedgeSide">--</b></div>
+        </div>
+      </section>
+
+      <!-- Wallet -->
+      <section class="panel">
+        <div class="ph"><h3>VÍ / PHIÊN</h3><span class="sub" id="pnlMode">Realtime</span></div>
+        <div class="stat-grid">
+          <div class="stat"><span>Vốn Live</span><b id="balance" class="orange">$0.00</b><small>equity</small></div>
+          <div class="stat"><span>Khả dụng</span><b id="available">$0.00</b></div>
+          <div class="stat"><span>PNL Phiên</span><b id="pnl">$0.00</b></div>
+          <div class="stat"><span>Lỗ</span><b id="loss" class="red">$0.00</b></div>
+          <div class="stat"><span>Winrate</span><b id="winrate" class="green">0%</b></div>
+          <div class="stat"><span>Cycles</span><b id="cycles" class="cyan">0</b></div>
+        </div>
+        <div class="pnl-bar">
+          <div class="pnl-track"><div class="pnl-fill" id="pnl-fill" style="width:50%"></div></div>
+        </div>
+      </section>
+
+      <!-- Config -->
+      <section class="panel">
+        <div class="ph"><h3>CONFIG ENV</h3></div>
+        <div class="config-rows">
+          <div class="row"><span>Min Edge</span><b id="minEdge" class="orange">--</b></div>
+          <div class="row"><span>Target Shares</span><b id="targetShares">--</b></div>
+          <div class="row"><span>Capital Used</span><b id="capitalUsed" class="yellow">--</b></div>
+          <div class="row"><span>Fill Latency</span><b id="latency" class="cyan">--</b></div>
+          <div class="row"><span>Live PNL</span><b id="livePnl">--</b></div>
+        </div>
+      </section>
+
+      <!-- PNL Chart -->
+      <section class="panel">
+        <div class="ph"><h3>PNL CURVE</h3><span class="sub">equity</span></div>
+        <div class="chart-wrap">
+          <svg id="equityChart" viewBox="0 0 600 160" preserveAspectRatio="none"></svg>
+        </div>
+      </section>
+    </aside>
+
+    <!-- CENTER PANE -->
+    <section class="pane active" id="centerPane">
+
+      <!-- Radar -->
+      <section class="panel">
+        <div class="ph"><h2>CUAX SCAN CENTER</h2><span class="sub" id="scanSub">Scanning...</span></div>
+        <div class="radar-wrap">
+          <div class="radar-grid">
+            <div class="radar-sweep"></div>
+            <div class="radar-center"></div>
+            <div class="radar-dot" style="left:35%;top:28%"></div>
+            <div class="radar-dot b" style="left:60%;top:55%"></div>
+            <div class="radar-dot c" style="left:52%;top:22%"></div>
+          </div>
+          <div class="radar-info">
+            <span id="scanMode">SCAN • DETECT • VALIDATE</span>
+            <span id="clockText">--:--:--</span>
+          </div>
+        </div>
+        <div class="scan-line" style="background:repeating-linear-gradient(90deg,var(--orange) 0 4px,var(--cyan) 4px 8px,transparent 8px 20px)"></div>
+      </section>
+
+      <!-- Pipeline -->
+      <section class="panel">
+        <div class="ph"><h2>6-LAYER PIPELINE</h2><span class="sub">Popup khi đổi state</span></div>
+        <div class="pipeline" id="pipeline"></div>
+      </section>
+
+      <!-- Prices -->
+      <section class="panel">
+        <div class="ph"><h2>ORDER BOOK</h2><span class="sub">YES / NO</span></div>
+        <div class="price-grid">
+          <div class="px-card"><span>YES ASK</span><b id="yesAsk" class="red">--</b></div>
+          <div class="px-card"><span>NO ASK</span><b id="noAsk" class="red">--</b></div>
+          <div class="px-card"><span>SUM</span><b id="combined" class="yellow">--</b></div>
+          <div class="px-card"><span>EDGE</span><b id="edgeBox" class="green">--</b></div>
+        </div>
+        <div class="profit-strip">
+          <div class="profit-cell"><span>CHỐT KHI SUM</span><b id="profitLimit" class="cyan">&lt;1.00</b></div>
+          <div class="profit-cell"><span>LỢI NHUẬN DỰ KIẾN</span><b id="profitIfLocked" class="green">--</b></div>
+          <div class="profit-cell"><span>TRẠNG THÁI LỜI</span><b id="profitState" class="yellow">SCAN</b></div>
+          <div class="profit-cell"><span>ENTRY SPEED</span><b id="entrySpeed" class="orange">FAST</b></div>
+        </div>
+        <div style="margin-top:8px">
+          <div class="depth-row">
+            <div class="depth-label"><span class="green" style="font-family:var(--font-pixel);font-size:6px">YES</span></div>
+            <div class="depth-track"><div class="depth-fill" id="upDepthBar" style="width:50%"></div></div>
+            <div class="depth-val"><span id="obUpLiq" style="font-family:var(--font-vt);font-size:14px">--</span></div>
+          </div>
+          <div class="depth-row" style="margin-top:4px">
+            <div class="depth-label"><span class="red" style="font-family:var(--font-pixel);font-size:6px">NO</span></div>
+            <div class="depth-track"><div class="depth-fill" id="downDepthBar" style="width:30%;background:var(--red)"></div></div>
+            <div class="depth-val"><span id="obDownLiq" style="font-family:var(--font-vt);font-size:14px">--</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Lock State -->
+      <section class="panel">
+        <div class="ph"><h2>LOCK STATE</h2><span class="sub">YES+NO &lt; 1.00</span></div>
+        <div class="lock-grid">
+          <div class="mini-card"><span>MODE</span><b id="arbMode" class="cyan">--</b></div>
+          <div class="mini-card"><span>GAP SIDE</span><b id="gapSignal">--</b></div>
+          <div class="mini-card"><span>FIRST PRICE</span><b id="firstPrice" class="orange">--</b></div>
+          <div class="mini-card"><span>HEDGE MAX</span><b id="hedgeMax">--</b></div>
+          <div class="mini-card"><span>LOCKED EDGE</span><b id="lockedEdge" class="green">--</b></div>
+        </div>
+        <div class="compact-note" id="profitRule">Rule: nếu BUY + SELL nhỏ hơn 1.00 và có edge dương thì bắn lệnh ngay, không chờ sâu.</div>
+        <div style="margin-top:6px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+          <div class="mini-card"><span>LOCK SUM</span><b id="lockSum" class="yellow">--</b></div>
+          <div class="mini-card"><span>HEDGE ASK</span><b id="hedgeAsk">--</b></div>
+          <div class="mini-card"><span>SMART TRG</span><b id="smartTrigger" class="cyan">--</b></div>
+        </div>
+      </section>
+
+      <!-- Feed -->
+      <section class="panel">
+        <div class="ph"><h2>TRADE FEED</h2><span class="sub">Realtime events</span></div>
+        <div class="feed" id="feed"><div class="muted" style="font-family:var(--font-pixel);font-size:6px;padding:8px">Chưa có feed...</div></div>
+      </section>
+    </section>
+
+    <!-- RIGHT PANE -->
+    <aside class="pane active" id="rightPane">
+
+      <!-- Asset price chart -->
+      <section class="panel">
+        <div class="ph"><h3>ASSET PRICE</h3><span class="sub" id="assetSub">live</span></div>
+        <div class="chart-wrap">
+          <svg id="assetChart" viewBox="0 0 600 160" preserveAspectRatio="none"></svg>
+        </div>
+      </section>
+
+      <!-- Market Status -->
+      <section class="panel">
+        <div class="ph"><h3>MARKET STATUS</h3></div>
+        <div class="config-rows" id="marketBox">
+          <div class="row muted" style="font-family:var(--font-pixel);font-size:6px">Chưa có market...</div>
+        </div>
+      </section>
+
+      <!-- Smart Hedge -->
+      <section class="panel">
+        <div class="ph"><h3>SMART HEDGE</h3><span class="sub">V4 tracker</span></div>
+        <div class="config-rows">
+          <div class="row"><span>Lowest Hedge</span><b id="lowestHedge" class="cyan">--</b></div>
+          <div class="row"><span>Rebound</span><b id="hedgeRebound" class="green">--</b></div>
+          <div class="row"><span>Last Action</span><b id="lastAction" class="orange">--</b></div>
+          <div class="row"><span>Wait Reason</span><b id="waitReason" class="yellow">--</b></div>
+        </div>
+      </section>
+
+      <!-- Logs -->
+      <section class="panel">
+        <div class="ph"><h3>SYSTEM LOGS</h3></div>
+        <div class="logs" id="logs"><div class="log-row muted" style="font-family:var(--font-pixel);font-size:6px">Chưa có log...</div></div>
+      </section>
+    </aside>
+
+  </main>
+
+  <!-- MOBILE TABS -->
+  <div class="mobile-tabs" id="mobileTabs">
+    <button class="active" onclick="setTab('left')">◀ INFO</button>
+    <button onclick="setTab('center')">⚡ TRADE</button>
+    <button onclick="setTab('right')">▶ LOG</button>
+  </div>
+
+  <!-- PROCESS POPUPS -->
+  <div class="process-stack" id="processStack"></div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+</div>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+const has = v => v !== null && v !== undefined && Number.isFinite(Number(v));
+const money = v => new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2}).format(Number(v||0));
+const price = v => has(v) ? Number(v).toFixed(2) : '--';
+const cents = v => has(v) ? Number(v).toFixed(2) + '¢' : '--';
+const setText = (id, val) => { const el=$(id); if(el && el.textContent !== String(val)) el.textContent = String(val); };
+const setClass = (id, cls) => { const el=$(id); if(el) el.className = cls; };
+const uptime = s => { s=Math.max(0,Number(s||0)); return [Math.floor(s/3600),Math.floor((s%3600)/60),Math.floor(s%60)].map(x=>String(x).padStart(2,'0')).join(':'); };
+
+let assetPts = [];
+let lastFeedHash = '';
+let lastLogHash = '';
+let lastPipelineHtml = '';
+let lastStageHash = '';
+let refreshing = false;
+
+function showToast(msg) {
+  const el = $('toast');
+  if(!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => el.style.display = 'none', 4000);
+}
+
+async function post(url, body={}) {
+  try {
+    const r = await fetch(url, {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body)});
+    const j = await r.json();
+    showToast(j.message || j.error || JSON.stringify(j));
+    refresh(true);
+  } catch(e) { showToast('ERR: ' + String(e)); }
+}
+
+function rounds() {
+  const v = $('roundsInput')?.value.trim() || 'unlimited';
+  const n = Number(v);
+  return (!v || v==='unlimited' || !Number.isFinite(n)) ? 'unlimited' : n;
+}
+
+window.startBot = () => post('/api/control/start', {
+  strategy: $('strategyInput')?.value.trim() || 'gap-six-layer-arb',
+  rounds: rounds(),
+  slotOffset: Number($('slotInput')?.value||0),
+  prod: $('prodInput')?.value === 'true',
+  alwaysLog: true,
+});
+window.pauseBot = () => post('/api/control/pause');
+window.resumeBot = () => post('/api/control/resume');
+window.stopBot = () => { if(confirm('STOP CuaX Trader?')) post('/api/control/stop'); };
+
+window.setTab = (tab) => {
+  const tabs = {left:'leftPane', center:'centerPane', right:'rightPane'};
+  Object.entries(tabs).forEach(([t,id]) => $(id)?.classList.toggle('active', t === tab));
+  const btns = $('mobileTabs')?.querySelectorAll('button');
+  if(btns) btns.forEach((b,i) => b.classList.toggle('active', ['left','center','right'][i] === tab));
+};
+
+function pickMarket(ms) {
+  const a = (ms||[]).slice();
+  a.sort((x,y) => ((y.marketOpen?1:0)-(x.marketOpen?1:0)) || ((y.state==='RUNNING'?1:0)-(x.state==='RUNNING'?1:0)) || String(y.slug||'').localeCompare(String(x.slug||'')));
+  return a[0] || null;
+}
+
+const icons = ['◈','◆','✦','⚖','↯','◎'];
+function normalizeState(s) { return ['pass','watch','warn','fail'].includes(s) ? s : 'idle'; }
+
+function renderPipeline(pipeline) {
+  const list = (pipeline && pipeline.length ? pipeline : [
+    {label:'01 Scan', state:'watch', detail:'Đang chờ market'},
+    {label:'02 Detect', state:'idle', detail:'Chưa có tín hiệu'},
+    {label:'03 Validate', state:'idle', detail:'Chờ xác nhận'},
+    {label:'04 Size', state:'idle', detail:'Chờ tính shares'},
+    {label:'05 Fill', state:'idle', detail:'Chưa gửi lệnh'},
+    {label:'06 Hedge', state:'idle', detail:'Chưa hedge'},
+  ]).slice(0,6);
+
+  const html = list.map((x,i) => {
+    const state = normalizeState(x.state);
+    const parts = String(x.label||'').split(/\s+/);
+    const num = parts[0] || `0${i+1}`;
+    const name = parts.slice(1).join(' ') || x.label;
+    return `<div class="stage ${state}">
+      <div class="stage-num">${esc(num)}</div>
+      <span class="stage-icon">${icons[i]||'•'}</span>
+      <div class="stage-name">${esc(name)}</div>
+      <div class="stage-status">${String(state).toUpperCase()}</div>
+      <div class="stage-detail">${esc(x.detail||'')}</div>
+    </div>`;
+  }).join('');
+
+  if(html !== lastPipelineHtml) {
+    const el = $('pipeline'); if(el) el.innerHTML = html;
+    lastPipelineHtml = html;
+  }
+
+  const hash = list.map(x=>`${x.label}|${x.state}|${x.detail}`).join('||');
+  if(lastStageHash && hash !== lastStageHash) {
+    const prev = lastStageHash.split('||');
+    list.forEach((x,i) => {
+      if(`${x.label}|${x.state}|${x.detail}` !== prev[i] && normalizeState(x.state) !== 'idle') processPopup(x, i);
+    });
+  }
+  lastStageHash = hash;
+}
+
+function processPopup(stage, idx) {
+  const stack = $('processStack'); if(!stack) return;
+  const state = normalizeState(stage.state);
+  const node = document.createElement('div');
+  node.className = `process-toast ${state}`;
+  node.innerHTML = `<h4>${esc(stage.label||'Layer '+(idx+1))}</h4><p>${esc(stage.detail||String(stage.state||'Processing'))}</p>`;
+  stack.prepend(node);
+  while(stack.children.length > 2) stack.removeChild(stack.lastElementChild);
+  setTimeout(() => { node.style.opacity='0'; node.style.transform='translateX(20px)'; setTimeout(()=>node.remove(),200); }, 3800);
+}
+
+function renderMarketBox(m) {
+  const el = $('marketBox'); if(!el) return;
+  if(!m) { el.innerHTML = '<div class="muted" style="font-family:var(--font-pixel);font-size:6px;padding:8px">Chưa có market</div>'; return; }
+  const side = m.side==='UP' ? 'BUY' : m.side==='DOWN' ? 'SELL' : (m.arb?.gapSignal||'FLAT');
+  const rows = [
+    ['Mã', m.slug],['State', m.state],
+    ['Còn lại', (m.remainingSecs??'--')+'s'],['Mở sau', (m.opensInSecs??'--')+'s'],
+    ['Giá hiện tại', m.assetPrice??'--'],['Giá mở cửa', m.priceToBeat??'--'],
+    ['Gap', m.gap??'--'],['Side', side],
+    ['BUY/SELL pos', `${m.position?.upShares??0}/${m.position?.downShares??0}`],
+  ];
+  el.innerHTML = rows.map(r => `<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join('');
+}
+
+function depth(a, b) {
+  const mx = Math.max(Number(a||0), Number(b||0), 1);
+  const up=$('upDepthBar'), dn=$('downDepthBar');
+  if(up) up.style.width = Math.min(100, Number(a||0)/mx*100) + '%';
+  if(dn) dn.style.width = Math.min(100, Number(b||0)/mx*100) + '%';
+}
+
+function sideText(side) {
+  const s = String(side||'--').toUpperCase();
+  if(s==='UP') return 'BUY';
+  if(s==='DOWN') return 'SELL';
+  return s;
+}
+
+function draw(svgId, pts, field, color) {
+  const svg = $(svgId); if(!svg) return;
+  const col = color || 'var(--orange)';
+  if(!pts || pts.length < 2) { svg.innerHTML = ''; return; }
+  const vals = pts.map(p => Number(field ? p[field] : p)).filter(Number.isFinite);
+  if(vals.length < 2) { svg.innerHTML = ''; return; }
+  const W=600, H=160, pad=12;
+  const min=Math.min(...vals), max=Math.max(...vals), range=max-min||1;
+  const c = vals.map((v,i) => [pad + (W-pad*2)*i/Math.max(1,vals.length-1), H-pad-((v-min)/range)*(H-pad*2)]);
+  // Pixel-stepped line for retro feel
+  const lineD = `M${c[0][0].toFixed(0)} ${c[0][1].toFixed(0)} ` + c.slice(1).map(x=>`L${x[0].toFixed(0)} ${x[1].toFixed(0)}`).join(' ');
+  const areaD = `M${c[0][0].toFixed(0)} ${H-pad} ` + c.map(x=>`L${x[0].toFixed(0)} ${x[1].toFixed(0)}`).join(' ') + ` L${c[c.length-1][0].toFixed(0)} ${H-pad} Z`;
+  const gid = 'g_'+svgId;
+  svg.innerHTML = `<defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${col}" stop-opacity=".35"/><stop offset="100%" stop-color="${col}" stop-opacity=".02"/></linearGradient></defs><path d="${areaD}" fill="url(#${gid})"/><path d="${lineD}" fill="none" stroke="${col}" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"/><rect x="${c[c.length-1][0]-3}" y="${c[c.length-1][1]-3}" width="6" height="6" fill="var(--cyan)"/>`;
+}
+
+function updateClock() { setText('clockText', new Date().toLocaleTimeString('vi-VN',{hour12:false})); }
+setInterval(updateClock, 1000);
+updateClock();
+
+async function refresh(force=false) {
+  if(refreshing) return;
+  if(document.hidden && !force) return;
+  refreshing = true;
+  try {
+    const r = await fetch('/api/state', {cache:'no-store'});
+    const s = await r.json();
+    const m = pickMarket(s.activeMarkets||[]);
+    const arb = m?.arb || {};
+    const c = s.control || {};
+
+    setText('mode', s.mode||'SIM');
+    setText('asset', (s.asset||'BTC') + '•' + (s.marketWindow||'5m'));
+    setText('strat-pill', s.strategy||'gap-six-layer-arb');
+    setText('bot-status', c.paused ? 'PAUSED' : (s.status||'IDLE'));
+    setText('uptime', uptime(s.uptimeSecs));
+
+    const sessionPnl = Number(s.sessionPnl||0);
+    const initBal = Number(s.initialBalance || (s.balanceHistory?.[0]?.balance) || (Number(s.balance||0)-sessionPnl) || 0);
+    const liveEquity = initBal + sessionPnl;
+    setText('balance', money(liveEquity));
+    setText('available', money(s.available));
+    setText('pnl', (sessionPnl>=0?'+':'') + money(sessionPnl));
+    setClass('pnl', sessionPnl>=0 ? 'green' : 'red');
+    setText('pnlMode', arb.livePnlMode||'Realtime');
+    setText('loss', money(s.sessionLoss));
+    const total = Number(s.wins||0) + Number(s.losses||0);
+    setText('winrate', total ? Math.round(Number(s.wins||0)*100/total)+'%' : '0%');
+    setText('cycles', arb.trades ?? s.completedMarkets ?? 0);
+    setText('minEdge', cents(arb.minEdgeCents));
+    setText('targetShares', arb.targetShares??'--');
+    setText('capitalUsed', money(arb.capitalUsed));
+    setText('latency', arb.fillLatencyMs ? Math.round(arb.fillLatencyMs)+'ms' : '--');
+    const livePnl = Number(arb.livePnl||0);
+    setText('livePnl', (livePnl>=0?'+':'') + money(livePnl));
+    setClass('livePnl', livePnl>=0 ? 'green' : 'red');
+
+    // PNL bar
+    const pf = $('pnl-fill');
+    if(pf) {
+      const pct = initBal > 0 ? Math.min(100, Math.max(0, (liveEquity/initBal)*50)) : 50;
+      pf.style.width = pct + '%';
+      pf.className = 'pnl-fill' + (sessionPnl < 0 ? ' neg' : '');
+    }
+
+    const gapSig = sideText(arb.gapSignal || (m?.side==='UP'?'BUY':m?.side==='DOWN'?'SELL':'--'));
+    setText('sig-big', gapSig||'--');
+    setText('sig-action', arb.firstLegSide ? '→ MUA ' + sideText(arb.firstLegSide) : (arb.waitReason ? '→ CHỜ' : '→ SCAN'));
+    setText('gapSignal', gapSig||'--');
+    setText('firstLeg', sideText(arb.firstLegSide));
+    setText('firstPrice', price(arb.firstLegPrice));
+    setText('hedgeSide', sideText(arb.hedgeSide));
+    setText('hedgeMax', price(arb.hedgeMaxPrice));
+    setText('yesAsk', price(arb.yesAsk));
+    setText('noAsk', price(arb.noAsk));
+    setText('combined', price(arb.sum));
+    setText('edgeBox', cents(arb.edgeCents));
+    const pLimit = Number(arb.profitSumLimit ?? arb.lockSumLimit ?? arb.maxEntrySum ?? 0.999);
+    const sumNow = Number(arb.sum ?? arb.lockSum);
+    const edgeNow = Number(arb.edgeCents ?? arb.lockedEdgeCents);
+    const profitUsd = Number(arb.profitIfLocked ?? (Number.isFinite(edgeNow) ? (edgeNow/100) * Number(arb.targetShares||1) : NaN));
+    setText('profitLimit', Number.isFinite(pLimit) ? '<= ' + pLimit.toFixed(4) : '< 1.00');
+    setText('profitIfLocked', Number.isFinite(profitUsd) ? (profitUsd>=0?'+':'') + money(profitUsd) : '--');
+    setClass('profitIfLocked', Number.isFinite(profitUsd) && profitUsd >= 0 ? 'green' : 'red');
+    const okProfit = Number.isFinite(sumNow) && sumNow < 1;
+    setText('profitState', okProfit ? 'CÓ LỜI' : 'CHỜ');
+    setClass('profitState', okProfit ? 'green' : 'yellow');
+    setText('entrySpeed', (arb.smartHedgeTrigger && String(arb.smartHedgeTrigger).includes('ĐỢI')) ? 'WAIT' : 'FAST');
+    setText('profitRule', `Rule: SUM <= ${Number.isFinite(pLimit)?pLimit.toFixed(4):'0.999'} thì khóa ngay. SUM hiện tại: ${Number.isFinite(sumNow)?sumNow.toFixed(4):'--'} | Edge: ${Number.isFinite(edgeNow)?edgeNow.toFixed(2)+'¢':'--'}`);
+    setText('arbMode', arb.mode||'--');
+    setText('hedgeAsk', price(arb.hedgeAsk));
+    setText('lockSum', price(arb.lockSum));
+    setText('lockedEdge', cents(arb.lockedEdgeCents));
+    setText('lowestHedge', price(arb.lowestHedgeAsk));
+    setText('hedgeRebound', cents(arb.hedgeReboundCents));
+    setText('smartTrigger', arb.smartHedgeTrigger||'--');
+    setText('lastAction', arb.lastAction||'--');
+    setText('waitReason', arb.waitReason||arb.waitReasons||'--');
+    setText('obUpLiq', money(arb.yesLiquidity));
+    setText('obDownLiq', money(arb.noLiquidity));
+    depth(arb.yesLiquidity, arb.noLiquidity);
+
+    const scanLabel = arb.mode ? `SCAN • ${String(arb.mode).toUpperCase()}` : 'SCAN • DETECT • VALIDATE';
+    setText('scanMode', scanLabel);
+    setText('scanSub', m?.slug ? `→ ${m.slug}` : 'Scanning realtime...');
+    setText('assetSub', m?.assetPrice ? `$${Number(m.assetPrice).toFixed(2)}` : 'live');
+
+    renderPipeline(m?.pipeline||[]);
+    renderMarketBox(m);
+
+    const equitySeries = (s.balanceHistory||[]).slice(-120);
+    equitySeries.push({time:new Date().toISOString(), balance:liveEquity});
+    draw('equityChart', equitySeries, 'balance', 'var(--green)');
+
+    if(has(m?.assetPrice)) { assetPts.push(Number(m.assetPrice)); if(assetPts.length>80) assetPts.shift(); }
+    draw('assetChart', assetPts, null, 'var(--cyan)');
+
+    // Feed
+    const feed = (s.tradeFeed||[]).slice(-20);
+    const fHash = feed.map(x=>`${x.time}|${x.type}|${x.message}`).join('||');
+    if(fHash !== lastFeedHash) {
+      const el=$('feed');
+      if(el) el.innerHTML = feed.reverse().map(x=>`<div class="feed-row"><div><span class="badge ${String(x.type||'info').toLowerCase()}">${esc(String(x.type||'info').toUpperCase())}</span><div class="feed-msg" style="margin-top:4px">${esc(x.message)}</div></div><div class="feed-time">${new Date(x.time).toLocaleTimeString('vi-VN',{hour12:false})}</div></div>`).join('') || '<div style="font-family:var(--font-pixel);font-size:6px;padding:8px;color:var(--muted)">Chưa có feed</div>';
+      lastFeedHash = fHash;
+    }
+
+    // Logs
+    const logs = (s.recentLogs||[]).slice(-25);
+    const lHash = logs.map(x=>`${x.time}|${x.msg}`).join('||');
+    if(lHash !== lastLogHash) {
+      const el=$('logs');
+      if(el) el.innerHTML = logs.reverse().map(x=>`<div class="log-row"><span style="flex:1;overflow-wrap:break-word;word-break:break-word">${esc(x.msg)}</span><span class="log-time">${new Date(x.time).toLocaleTimeString('vi-VN',{hour12:false})}</span></div>`).join('') || '<div style="font-family:var(--font-pixel);font-size:6px;padding:8px;color:var(--muted)">Chưa có log</div>';
+      lastLogHash = lHash;
+    }
+
+  } catch(e) {
+    setText('bot-status', 'ERR');
+    console.error(e);
+  } finally {
+    refreshing = false;
+  }
+}
+
+refresh(true);
+// Fast polling: 800ms when active, skip when hidden
+setInterval(() => refresh(false), 650);
+// Refresh when tab becomes visible
+document.addEventListener('visibilitychange', () => { if(!document.hidden) refresh(true); });
+})();
+</script>
+</body>
+</html>
